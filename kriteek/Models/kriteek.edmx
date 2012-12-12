@@ -1,0 +1,518 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="kriteekModel.Store" Alias="Self" Provider="MySql.Data.MySqlClient" ProviderManifestToken="5.5" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityContainer Name="kriteekModelStoreContainer">
+          <EntitySet Name="friendship" EntityType="kriteekModel.Store.friendship" store:Type="Tables" Schema="kriteek" />
+          <EntitySet Name="friendtype" EntityType="kriteekModel.Store.friendtype" store:Type="Tables" Schema="kriteek" />
+          <EntitySet Name="isintopic" EntityType="kriteekModel.Store.isintopic" store:Type="Tables" Schema="kriteek" />
+          <EntitySet Name="person" EntityType="kriteekModel.Store.person" store:Type="Tables" Schema="kriteek" />
+          <EntitySet Name="post" EntityType="kriteekModel.Store.post" store:Type="Tables" Schema="kriteek" />
+          <EntitySet Name="rating" EntityType="kriteekModel.Store.rating" store:Type="Tables" Schema="kriteek" />
+          <EntitySet Name="topic" EntityType="kriteekModel.Store.topic" store:Type="Tables" Schema="kriteek" />
+          <EntitySet Name="visibility" EntityType="kriteekModel.Store.visibility" store:Type="Tables" Schema="kriteek" />
+          <AssociationSet Name="cID" Association="kriteekModel.Store.cID">
+            <End Role="post" EntitySet="post" />
+            <End Role="isintopic" EntitySet="isintopic" />
+          </AssociationSet>
+          <AssociationSet Name="fID" Association="kriteekModel.Store.fID">
+            <End Role="person" EntitySet="person" />
+            <End Role="friendship" EntitySet="friendship" />
+          </AssociationSet>
+          <AssociationSet Name="ftID" Association="kriteekModel.Store.ftID">
+            <End Role="friendtype" EntitySet="friendtype" />
+            <End Role="friendship" EntitySet="friendship" />
+          </AssociationSet>
+          <AssociationSet Name="pID" Association="kriteekModel.Store.pID">
+            <End Role="person" EntitySet="person" />
+            <End Role="friendship" EntitySet="friendship" />
+          </AssociationSet>
+          <AssociationSet Name="rating_cID" Association="kriteekModel.Store.rating_cID">
+            <End Role="post" EntitySet="post" />
+            <End Role="rating" EntitySet="rating" />
+          </AssociationSet>
+          <AssociationSet Name="rating_pID" Association="kriteekModel.Store.rating_pID">
+            <End Role="person" EntitySet="person" />
+            <End Role="rating" EntitySet="rating" />
+          </AssociationSet>
+          <AssociationSet Name="tID" Association="kriteekModel.Store.tID">
+            <End Role="topic" EntitySet="topic" />
+            <End Role="isintopic" EntitySet="isintopic" />
+          </AssociationSet>
+          <AssociationSet Name="visibility_ftID" Association="kriteekModel.Store.visibility_ftID">
+            <End Role="friendtype" EntitySet="friendtype" />
+            <End Role="visibility" EntitySet="visibility" />
+          </AssociationSet>
+          <AssociationSet Name="visiblility_cID" Association="kriteekModel.Store.visiblility_cID">
+            <End Role="post" EntitySet="post" />
+            <End Role="visibility" EntitySet="visibility" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="friendship">
+          <Key>
+            <PropertyRef Name="pID" />
+            <PropertyRef Name="fID" />
+          </Key>
+          <Property Name="pID" Type="uint" Nullable="false" />
+          <Property Name="fID" Type="uint" Nullable="false" />
+          <Property Name="ftID" Type="uint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="friendtype">
+          <Key>
+            <PropertyRef Name="ftID" />
+          </Key>
+          <Property Name="ftID" Type="uint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="fname" Type="varchar" Nullable="false" MaxLength="30" />
+        </EntityType>
+        <EntityType Name="isintopic">
+          <Key>
+            <PropertyRef Name="cID" />
+            <PropertyRef Name="tID" />
+          </Key>
+          <Property Name="cID" Type="uint" Nullable="false" />
+          <Property Name="tID" Type="uint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="person">
+          <Key>
+            <PropertyRef Name="pID" />
+          </Key>
+          <Property Name="pID" Type="uint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="fname" Type="varchar" Nullable="false" MaxLength="30" />
+          <Property Name="lname" Type="varchar" Nullable="false" MaxLength="30" />
+        </EntityType>
+        <EntityType Name="post">
+          <Key>
+            <PropertyRef Name="cID" />
+          </Key>
+          <Property Name="cID" Type="uint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="cType" Type="int" Nullable="false" />
+          <Property Name="cText" Type="varchar" Nullable="false" />
+          <Property Name="pTime" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="rating">
+          <Key>
+            <PropertyRef Name="pID" />
+            <PropertyRef Name="cID" />
+          </Key>
+          <Property Name="pID" Type="uint" Nullable="false" />
+          <Property Name="cID" Type="uint" Nullable="false" />
+          <Property Name="rating" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="topic">
+          <Key>
+            <PropertyRef Name="tID" />
+          </Key>
+          <Property Name="tID" Type="uint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="topic" Type="varchar" Nullable="false" MaxLength="30" />
+        </EntityType>
+        <EntityType Name="visibility">
+          <Key>
+            <PropertyRef Name="cID" />
+            <PropertyRef Name="ftID" />
+          </Key>
+          <Property Name="cID" Type="uint" Nullable="false" />
+          <Property Name="ftID" Type="uint" Nullable="false" />
+        </EntityType>
+        <Association Name="cID">
+          <End Role="post" Type="kriteekModel.Store.post" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="isintopic" Type="kriteekModel.Store.isintopic" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="post">
+              <PropertyRef Name="cID" />
+            </Principal>
+            <Dependent Role="isintopic">
+              <PropertyRef Name="cID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fID">
+          <End Role="person" Type="kriteekModel.Store.person" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="friendship" Type="kriteekModel.Store.friendship" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="person">
+              <PropertyRef Name="pID" />
+            </Principal>
+            <Dependent Role="friendship">
+              <PropertyRef Name="fID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="ftID">
+          <End Role="friendtype" Type="kriteekModel.Store.friendtype" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="friendship" Type="kriteekModel.Store.friendship" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="friendtype">
+              <PropertyRef Name="ftID" />
+            </Principal>
+            <Dependent Role="friendship">
+              <PropertyRef Name="ftID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="pID">
+          <End Role="person" Type="kriteekModel.Store.person" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="friendship" Type="kriteekModel.Store.friendship" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="person">
+              <PropertyRef Name="pID" />
+            </Principal>
+            <Dependent Role="friendship">
+              <PropertyRef Name="pID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="rating_cID">
+          <End Role="post" Type="kriteekModel.Store.post" Multiplicity="1" />
+          <End Role="rating" Type="kriteekModel.Store.rating" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="post">
+              <PropertyRef Name="cID" />
+            </Principal>
+            <Dependent Role="rating">
+              <PropertyRef Name="cID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="rating_pID">
+          <End Role="person" Type="kriteekModel.Store.person" Multiplicity="1" />
+          <End Role="rating" Type="kriteekModel.Store.rating" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="person">
+              <PropertyRef Name="pID" />
+            </Principal>
+            <Dependent Role="rating">
+              <PropertyRef Name="pID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="tID">
+          <End Role="topic" Type="kriteekModel.Store.topic" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="isintopic" Type="kriteekModel.Store.isintopic" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="topic">
+              <PropertyRef Name="tID" />
+            </Principal>
+            <Dependent Role="isintopic">
+              <PropertyRef Name="tID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="visibility_ftID">
+          <End Role="friendtype" Type="kriteekModel.Store.friendtype" Multiplicity="1" />
+          <End Role="visibility" Type="kriteekModel.Store.visibility" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="friendtype">
+              <PropertyRef Name="ftID" />
+            </Principal>
+            <Dependent Role="visibility">
+              <PropertyRef Name="ftID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="visiblility_cID">
+          <End Role="post" Type="kriteekModel.Store.post" Multiplicity="1" />
+          <End Role="visibility" Type="kriteekModel.Store.visibility" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="post">
+              <PropertyRef Name="cID" />
+            </Principal>
+            <Dependent Role="visibility">
+              <PropertyRef Name="cID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="kriteekModel" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="kriteekEntities1" p1:LazyLoadingEnabled="true">
+          <EntitySet Name="Friendships" EntityType="kriteekModel.Friendship" />
+          <EntitySet Name="Friendtypes" EntityType="kriteekModel.Friendtype" />
+          <EntitySet Name="People" EntityType="kriteekModel.Person" />
+          <EntitySet Name="Posts" EntityType="kriteekModel.Post" />
+          <EntitySet Name="Ratings" EntityType="kriteekModel.Rating" />
+          <EntitySet Name="topics" EntityType="kriteekModel.topic" />
+          <AssociationSet Name="fID" Association="kriteekModel.fID">
+            <End Role="person" EntitySet="People" />
+            <End Role="friendship" EntitySet="Friendships" />
+          </AssociationSet>
+          <AssociationSet Name="ftID" Association="kriteekModel.ftID">
+            <End Role="friendtype" EntitySet="Friendtypes" />
+            <End Role="friendship" EntitySet="Friendships" />
+          </AssociationSet>
+          <AssociationSet Name="pID" Association="kriteekModel.pID">
+            <End Role="person" EntitySet="People" />
+            <End Role="friendship" EntitySet="Friendships" />
+          </AssociationSet>
+          <AssociationSet Name="rating_pID" Association="kriteekModel.rating_pID">
+            <End Role="person" EntitySet="People" />
+            <End Role="rating" EntitySet="Ratings" />
+          </AssociationSet>
+          <AssociationSet Name="rating_cID" Association="kriteekModel.rating_cID">
+            <End Role="post" EntitySet="Posts" />
+            <End Role="rating" EntitySet="Ratings" />
+          </AssociationSet>
+          <AssociationSet Name="isintopic" Association="kriteekModel.isintopic">
+            <End Role="post" EntitySet="Posts" />
+            <End Role="topic" EntitySet="topics" />
+          </AssociationSet>
+          <AssociationSet Name="visibility" Association="kriteekModel.visibility">
+            <End Role="friendtype" EntitySet="Friendtypes" />
+            <End Role="post" EntitySet="Posts" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Friendship">
+          <Key>
+            <PropertyRef Name="PersonID" />
+            <PropertyRef Name="FriendID" />
+          </Key>
+          <Property Name="PersonID" Type="Int64" Nullable="false" />
+          <Property Name="FriendID" Type="Int64" Nullable="false" />
+          <Property Name="Type" Type="Int64" Nullable="false" />
+          <NavigationProperty Name="person" Relationship="kriteekModel.fID" FromRole="friendship" ToRole="person" />
+          <NavigationProperty Name="friendtype" Relationship="kriteekModel.ftID" FromRole="friendship" ToRole="friendtype" />
+          <NavigationProperty Name="person1" Relationship="kriteekModel.pID" FromRole="friendship" ToRole="person" />
+        </EntityType>
+        <EntityType Name="Friendtype">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="30" Unicode="false" FixedLength="false" />
+          <NavigationProperty Name="friendships" Relationship="kriteekModel.ftID" FromRole="friendtype" ToRole="friendship" />
+          <NavigationProperty Name="posts" Relationship="kriteekModel.visibility" FromRole="friendtype" ToRole="post" />
+        </EntityType>
+        <EntityType Name="Person">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="First" Type="String" Nullable="false" MaxLength="30" Unicode="false" FixedLength="false" />
+          <Property Name="Last" Type="String" Nullable="false" MaxLength="30" Unicode="false" FixedLength="false" />
+          <NavigationProperty Name="friendships" Relationship="kriteekModel.fID" FromRole="person" ToRole="friendship" />
+          <NavigationProperty Name="friendships1" Relationship="kriteekModel.pID" FromRole="person" ToRole="friendship" />
+          <NavigationProperty Name="ratings" Relationship="kriteekModel.rating_pID" FromRole="person" ToRole="rating" />
+        </EntityType>
+        <EntityType Name="Post">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="Type" Type="Int32" Nullable="false" />
+          <Property Name="Content" Type="String" Nullable="false" MaxLength="1000" Unicode="false" FixedLength="false" />
+          <Property Name="Time" Type="DateTime" Nullable="false" />
+          <NavigationProperty Name="ratings" Relationship="kriteekModel.rating_cID" FromRole="post" ToRole="rating" />
+          <NavigationProperty Name="topics" Relationship="kriteekModel.isintopic" FromRole="post" ToRole="topic" />
+          <NavigationProperty Name="friendtypes" Relationship="kriteekModel.visibility" FromRole="post" ToRole="friendtype" />
+        </EntityType>
+        <EntityType Name="Rating">
+          <Key>
+            <PropertyRef Name="PersonID" />
+            <PropertyRef Name="PostID" />
+          </Key>
+          <Property Name="PersonID" Type="Int64" Nullable="false" />
+          <Property Name="PostID" Type="Int64" Nullable="false" />
+          <Property Name="RatingValue" Type="kriteekModel.RatingValue" Nullable="false" />
+          <NavigationProperty Name="person" Relationship="kriteekModel.rating_pID" FromRole="rating" ToRole="person" />
+          <NavigationProperty Name="post" Relationship="kriteekModel.rating_cID" FromRole="rating" ToRole="post" />
+        </EntityType>
+        <EntityType Name="topic">
+          <Key>
+            <PropertyRef Name="tID" />
+          </Key>
+          <Property Name="tID" Type="Int64" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="topic1" Type="String" Nullable="false" MaxLength="30" Unicode="false" FixedLength="false" />
+          <NavigationProperty Name="posts" Relationship="kriteekModel.isintopic" FromRole="topic" ToRole="post" />
+        </EntityType>
+        <Association Name="fID">
+          <End Role="person" Type="kriteekModel.Person" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="friendship" Type="kriteekModel.Friendship" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="person">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="friendship">
+              <PropertyRef Name="FriendID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="ftID">
+          <End Role="friendtype" Type="kriteekModel.Friendtype" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="friendship" Type="kriteekModel.Friendship" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="friendtype">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="friendship">
+              <PropertyRef Name="Type" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="pID">
+          <End Role="person" Type="kriteekModel.Person" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="friendship" Type="kriteekModel.Friendship" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="person">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="friendship">
+              <PropertyRef Name="PersonID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="rating_pID">
+          <End Role="person" Type="kriteekModel.Person" Multiplicity="1" />
+          <End Role="rating" Type="kriteekModel.Rating" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="person">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="rating">
+              <PropertyRef Name="PersonID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="rating_cID">
+          <End Role="post" Type="kriteekModel.Post" Multiplicity="1" />
+          <End Role="rating" Type="kriteekModel.Rating" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="post">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="rating">
+              <PropertyRef Name="PostID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="isintopic">
+          <End Role="post" Type="kriteekModel.Post" Multiplicity="*" />
+          <End Role="topic" Type="kriteekModel.topic" Multiplicity="*" />
+        </Association>
+        <Association Name="visibility">
+          <End Role="friendtype" Type="kriteekModel.Friendtype" Multiplicity="*" />
+          <End Role="post" Type="kriteekModel.Post" Multiplicity="*" />
+        </Association>
+        <EnumType Name="RatingValue">
+          <Member Name="Strongly_Dislike" Value="-2" />
+          <Member Name="Dislike" Value="-1" />
+          <Member Name="Neutral" Value="0" />
+          <Member Name="Like" Value="1" />
+          <Member Name="Stringly_Like" Value="2" />
+        </EnumType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="kriteekModelStoreContainer" CdmEntityContainer="kriteekEntities1">
+          <EntitySetMapping Name="Friendships">
+            <EntityTypeMapping TypeName="kriteekModel.Friendship">
+              <MappingFragment StoreEntitySet="friendship">
+                <ScalarProperty Name="PersonID" ColumnName="pID" />
+                <ScalarProperty Name="FriendID" ColumnName="fID" />
+                <ScalarProperty Name="Type" ColumnName="ftID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Friendtypes">
+            <EntityTypeMapping TypeName="kriteekModel.Friendtype">
+              <MappingFragment StoreEntitySet="friendtype">
+                <ScalarProperty Name="ID" ColumnName="ftID" />
+                <ScalarProperty Name="Name" ColumnName="fname" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="People">
+            <EntityTypeMapping TypeName="kriteekModel.Person">
+              <MappingFragment StoreEntitySet="person">
+                <ScalarProperty Name="ID" ColumnName="pID" />
+                <ScalarProperty Name="First" ColumnName="fname" />
+                <ScalarProperty Name="Last" ColumnName="lname" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Posts">
+            <EntityTypeMapping TypeName="kriteekModel.Post">
+              <MappingFragment StoreEntitySet="post">
+                <ScalarProperty Name="ID" ColumnName="cID" />
+                <ScalarProperty Name="Type" ColumnName="cType" />
+                <ScalarProperty Name="Content" ColumnName="cText" />
+                <ScalarProperty Name="Time" ColumnName="pTime" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Ratings">
+            <EntityTypeMapping TypeName="kriteekModel.Rating">
+              <MappingFragment StoreEntitySet="rating">
+                <ScalarProperty Name="PersonID" ColumnName="pID" />
+                <ScalarProperty Name="PostID" ColumnName="cID" />
+                <ScalarProperty Name="RatingValue" ColumnName="rating" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="topics">
+            <EntityTypeMapping TypeName="kriteekModel.topic">
+              <MappingFragment StoreEntitySet="topic">
+                <ScalarProperty Name="tID" ColumnName="tID" />
+                <ScalarProperty Name="topic1" ColumnName="topic" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="isintopic" TypeName="kriteekModel.isintopic" StoreEntitySet="isintopic">
+            <EndProperty Name="post">
+              <ScalarProperty Name="ID" ColumnName="cID" />
+            </EndProperty>
+            <EndProperty Name="topic">
+              <ScalarProperty Name="tID" ColumnName="tID" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="visibility" TypeName="kriteekModel.visibility" StoreEntitySet="visibility">
+            <EndProperty Name="friendtype">
+              <ScalarProperty Name="ID" ColumnName="ftID" />
+            </EndProperty>
+            <EndProperty Name="post">
+              <ScalarProperty Name="ID" ColumnName="cID" />
+            </EndProperty>
+          </AssociationSetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
