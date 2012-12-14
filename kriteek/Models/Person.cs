@@ -16,17 +16,20 @@ namespace kriteek.Models
     {
         public Person()
         {
-            this.friendships = new HashSet<Friendship>();
-            this.friendships1 = new HashSet<Friendship>();
-            this.ratings = new HashSet<Rating>();
+            this.Friendtypes = new HashSet<Friendtype>();
+            this.Posts = new HashSet<Post>();
+            this.Ratings = new HashSet<Rating>();
+            this.Friends = new HashSet<Friendtype>();
         }
     
-        public long ID { get; set; }
+        public int ID { get; set; }
+        public string Username { get; set; }
         public string First { get; set; }
         public string Last { get; set; }
     
-        public virtual ICollection<Friendship> friendships { get; set; }
-        public virtual ICollection<Friendship> friendships1 { get; set; }
-        public virtual ICollection<Rating> ratings { get; set; }
+        public virtual ICollection<Friendtype> Friendtypes { get; set; }
+        public virtual ICollection<Post> Posts { get; set; }
+        public virtual ICollection<Rating> Ratings { get; set; }
+        public virtual ICollection<Friendtype> Friends { get; set; }
     }
 }

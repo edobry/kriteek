@@ -135,9 +135,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\Friendship.cs">
-      <DependentUpon>kriteek.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\Friendtype.cs">
       <DependentUpon>kriteek.tt</DependentUpon>
     </Compile>
@@ -162,13 +159,16 @@
     <Compile Include="Models\Post.cs">
       <DependentUpon>kriteek.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\PostRating.cs">
+      <DependentUpon>kriteek.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Rating.cs">
       <DependentUpon>kriteek.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\RatingValue.cs">
       <DependentUpon>kriteek.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\topic.cs">
+    <Compile Include="Models\Topic.cs">
       <DependentUpon>kriteek.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -179,18 +179,18 @@
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>kriteek.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <Content Include="Models\kriteek.edmx.diagram">
-      <DependentUpon>kriteek.edmx</DependentUpon>
-    </Content>
     <Content Include="Models\kriteek.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>kriteek.edmx</DependentUpon>
       <LastGenOutput>kriteek.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Models\kriteek.edmx.diagram">
       <DependentUpon>kriteek.edmx</DependentUpon>
     </Content>
     <Content Include="Models\kriteek.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>kriteek.cs</LastGenOutput>
       <DependentUpon>kriteek.edmx</DependentUpon>
+      <LastGenOutput>kriteek.cs</LastGenOutput>
     </Content>
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\jquery-1.7.1.js" />

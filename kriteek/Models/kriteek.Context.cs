@@ -12,13 +12,17 @@ namespace kriteek.Models
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+    using System.Data.Objects;
+    using System.Data.Objects.DataClasses;
+    using System.Linq;
     
-    public partial class kriteekEntities1 : DbContext
+    public partial class Entities : DbContext
     {
-        public kriteekEntities1()
-            : base("name=kriteekEntities1")
+        public Entities()
+            : base("name=Entities")
         {
-    		base.Configuration.ProxyCreationEnabled = false;
+    		this.Configuration.ProxyCreationEnabled = false;
+            this.Configuration.LazyLoadingEnabled = true;
         }
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -26,11 +30,27 @@ namespace kriteek.Models
             throw new UnintentionalCodeFirstException();
         }
     
-        public DbSet<Friendship> Friendships { get; set; }
         public DbSet<Friendtype> Friendtypes { get; set; }
         public DbSet<Person> People { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<Rating> Ratings { get; set; }
-        public DbSet<topic> topics { get; set; }
+        public DbSet<Topic> Topics { get; set; }
+    
+        public virtual int RatePost(Nullable<int> post, Nullable<int> rater, Nullable<int> rating)
+        {
+            var postParameter = post.HasValue ?
+                new ObjectParameter("post", post) :
+                new ObjectParameter("post", typeof(int));
+    
+            var raterParameter = rater.HasValue ?
+                new ObjectParameter("rater", rater) :
+                new ObjectParameter("rater", typeof(int));
+    
+            var ratingParameter = rating.HasValue ?
+                new ObjectParameter("rating", rating) :
+                new ObjectParameter("rating", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("RatePost", postParameter, raterParameter, ratingParameter);
+        }
     }
 }

@@ -59,15 +59,8 @@ using System.Linq;
     public <#=code.Escape(container)#>()
         : base("name=<#=container.Name#>")
     {
-		base.Configuration.ProxyCreationEnabled = false;
-<#
-if (!loader.IsLazyLoadingEnabled(container))
-{
-#>
-        this.Configuration.LazyLoadingEnabled = false;
-<#
-}
-#>
+		this.Configuration.ProxyCreationEnabled = false;
+        this.Configuration.LazyLoadingEnabled = true;
     }
 
     protected override void OnModelCreating(DbModelBuilder modelBuilder)

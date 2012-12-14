@@ -10,16 +10,13 @@
 namespace kriteek.Models
 {
     using System;
-    using System.Collections.Generic;
     
-    public partial class Friendship
+    public enum PostRating : int
     {
-        public long PersonID { get; set; }
-        public long FriendID { get; set; }
-        public long Type { get; set; }
-    
-        public virtual Person person { get; set; }
-        public virtual Friendtype friendtype { get; set; }
-        public virtual Person person1 { get; set; }
+        Strongly_Dislike = 0,
+        Dislike = 1,
+        Neutral = 3,
+        Like = 4,
+        Strongly_Like = 5
     }
 }

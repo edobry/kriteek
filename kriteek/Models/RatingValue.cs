@@ -17,6 +17,6 @@ namespace kriteek.Models
         Dislike = -1,
         Neutral = 0,
         Like = 1,
-        Stringly_Like = 2
+        Strongly_Like = 2
     }
 }

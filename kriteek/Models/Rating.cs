@@ -14,11 +14,11 @@ namespace kriteek.Models
     
     public partial class Rating
     {
-        public long PersonID { get; set; }
-        public long PostID { get; set; }
-        public RatingValue RatingValue { get; set; }
+        public int RaterID { get; set; }
+        public int PostID { get; set; }
+        public PostRating Value { get; set; }
     
-        public virtual Person person { get; set; }
-        public virtual Post post { get; set; }
+        public virtual Person Rater { get; set; }
+        public virtual Post Post { get; set; }
     }
 }

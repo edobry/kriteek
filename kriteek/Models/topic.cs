@@ -12,16 +12,11 @@ namespace kriteek.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class topic
+    public partial class Topic
     {
-        public topic()
-        {
-            this.posts = new HashSet<Post>();
-        }
+        public int ID { get; set; }
+        public string Name { get; set; }
     
-        public long tID { get; set; }
-        public string topic1 { get; set; }
-    
-        public virtual ICollection<Post> posts { get; set; }
+        public virtual Post Post { get; set; }
     }
 }

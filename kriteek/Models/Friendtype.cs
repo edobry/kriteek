@@ -16,14 +16,15 @@ namespace kriteek.Models
     {
         public Friendtype()
         {
-            this.friendships = new HashSet<Friendship>();
-            this.posts = new HashSet<Post>();
+            this.Members = new HashSet<Person>();
+            this.CanSee = new HashSet<Post>();
         }
     
-        public long ID { get; set; }
-        public string Name { get; set; }
+        public int PosterID { get; set; }
+        public string Type { get; set; }
     
-        public virtual ICollection<Friendship> friendships { get; set; }
-        public virtual ICollection<Post> posts { get; set; }
+        public virtual Person Poster { get; set; }
+        public virtual ICollection<Person> Members { get; set; }
+        public virtual ICollection<Post> CanSee { get; set; }
     }
 }

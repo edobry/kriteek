@@ -9,21 +9,23 @@ using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using kriteek.Models;
+using Newtonsoft.Json.Linq;
+using System.Collections;
 
 namespace kriteek.Controllers
 {
     public class PostController : ApiController
     {
-        private kriteekEntities1 db = new kriteekEntities1();
+        private Entities db = new Entities();
 
         // GET api/Post
-        public IEnumerable<Post> GetPosts()
+        public IEnumerable<Post> GetAll()
         {
             return db.Posts.AsEnumerable();
         }
 
         // GET api/Post/5
-        public Post GetPost(long id)
+        public Post GetPost(int id)
         {
             Post post = db.Posts.Find(id);
             if (post == null)
@@ -34,56 +36,99 @@ namespace kriteek.Controllers
             return post;
         }
 
-        // PUT api/Post/5
-        public HttpResponseMessage PutPost(long id, Post post)
+        public IEnumerable<Post> GetAllVisibleToUser(int user)
         {
-            if (ModelState.IsValid && id == post.ID)
-            {
-                db.Entry(post).State = EntityState.Modified;
+            return db.Friendtypes.Where(x => x.Members.Select(member => member.ID).Contains(user)).SelectMany(x => x.CanSee);
+        }
 
-                try
-                {
-                    db.SaveChanges();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    return Request.CreateResponse(HttpStatusCode.NotFound);
-                }
-
-                return Request.CreateResponse(HttpStatusCode.OK);
-            }
-            else
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest);
-            }
+        public IEnumerable<Post> GetAllVisibleToGroup(Friendtype group)
+        {
+            return group.CanSee;
         }
 
         // POST api/Post
-        public HttpResponseMessage PostPost(Post post)
+        public HttpResponseMessage PostCreate(JObject newPost)
         {
-            if (ModelState.IsValid)
-            {
-                db.Posts.Add(post);
-                db.SaveChanges();
+            dynamic json = newPost;
+            Post post = json.post.ToObject<Post>();
+            int PosterID = json.PosterID;
+            IEnumerable<string> groups = json.groups.ToObject<IEnumerable<string>>();
 
-                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.Created, post);
-                response.Headers.Location = new Uri(Url.Link("DefaultApi", new { id = post.ID }));
-                return response;
-            }
-            else
+            post.Poster = db.People.Single(x => x.Username == "abees");
+            post.VisibleTo = db.Friendtypes.Where(x => x.PosterID == PosterID && groups.Contains(x.Type)).ToList() as ICollection<Friendtype>;
+            db.Posts.Add(post);
+            db.SaveChanges();
+            post.Poster = null;
+            post.VisibleTo = null;
+            post.Topics = null;
+            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.Created, post);
+            response.Headers.Location = new Uri(Url.Link("DefaultApi", new { id = post.ID }));
+            return response;
+        }
+
+        // PUT api/post/id/
+        public HttpResponseMessage PutVisibleTo(int id, JObject input)
+        {
+            dynamic json = input;
+            IEnumerable<Friendtype> friendtypes = json.friendtypes.ToObject<IEnumerable<Friendtype>>();
+            bool show = json.show;
+
+            Post post = db.Posts.Include(x => x.VisibleTo).Single(x => x.ID == id);
+            if (post == null)
+                return Request.CreateResponse(HttpStatusCode.NotFound);
+
+            Friendtype _ft;
+            foreach (Friendtype ft in friendtypes)
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest);
+                _ft = db.Friendtypes.Find(ft.PosterID, ft.Type);
+                if (show) post.VisibleTo.Add(_ft);
+                else post.VisibleTo.Remove(_ft);
             }
+
+            db.SaveChanges();
+            
+            return Request.CreateResponse(HttpStatusCode.OK);
+        }
+
+        //// PUT api/Post/5
+        //public HttpResponseMessage PutPost(int id, Post post)
+        //{
+        //    if (ModelState.IsValid && id == post.ID)
+        //    {
+        //        db.Entry(post).State = EntityState.Modified;
+
+        //        try
+        //        {
+        //            db.SaveChanges();
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            return Request.CreateResponse(HttpStatusCode.NotFound);
+        //        }
+
+        //        return Request.CreateResponse(HttpStatusCode.OK);
+        //    }
+        //    else
+        //    {
+        //        return Request.CreateResponse(HttpStatusCode.BadRequest);
+        //    }
+        //}
+
+        // POST api/post/id
+        public HttpResponseMessage PostRate(int id, Rating rating)
+        {
+            db.RatePost(id, rating.RaterID, (int)rating.Value);
+            return Request.CreateResponse(HttpStatusCode.OK);
         }
 
         // DELETE api/Post/5
-        public HttpResponseMessage DeletePost(long id)
+        public HttpResponseMessage DeletePost(int id)
         {
             Post post = db.Posts.Find(id);
             if (post == null)
             {
                 return Request.CreateResponse(HttpStatusCode.NotFound);
-            }
+            } 
 
             db.Posts.Remove(post);
 
