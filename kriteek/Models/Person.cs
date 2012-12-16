@@ -19,7 +19,7 @@ namespace kriteek.Models
             this.Friendtypes = new HashSet<Friendtype>();
             this.Posts = new HashSet<Post>();
             this.Ratings = new HashSet<Rating>();
-            this.Friends = new HashSet<Friendtype>();
+            this.IsFriendOf = new HashSet<Friendtype>();
         }
     
         public int ID { get; set; }
@@ -30,6 +30,6 @@ namespace kriteek.Models
         public virtual ICollection<Friendtype> Friendtypes { get; set; }
         public virtual ICollection<Post> Posts { get; set; }
         public virtual ICollection<Rating> Ratings { get; set; }
-        public virtual ICollection<Friendtype> Friends { get; set; }
+        public virtual ICollection<Friendtype> IsFriendOf { get; set; }
     }
 }

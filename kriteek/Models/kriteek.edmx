@@ -301,7 +301,7 @@
           <NavigationProperty Name="Friendtypes" Relationship="kriteekModel.fk__3CD3F9F7_EF8F_409B_B3C9_F5AF718BD27F_" FromRole="person" ToRole="friendtype" />
           <NavigationProperty Name="Posts" Relationship="kriteekModel.post_poster" FromRole="person" ToRole="post" />
           <NavigationProperty Name="Ratings" Relationship="kriteekModel.rating_pid" FromRole="person" ToRole="rating" />
-          <NavigationProperty Name="Friends" Relationship="kriteekModel.friend" FromRole="person" ToRole="friendtype" />
+          <NavigationProperty Name="IsFriendOf" Relationship="kriteekModel.friend" FromRole="person" ToRole="friendtype" />
         </EntityType>
         <EntityType Name="Post">
           <Key>
