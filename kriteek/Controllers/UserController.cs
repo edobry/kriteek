@@ -9,12 +9,24 @@ using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using kriteek.Models;
+using System.Web.Security;
 
 namespace kriteek.Controllers
 {
     public class UserController : ApiController
     {
         private Entities db = new Entities();
+
+        // POST api/User/logininfo
+        public int PostLogin([FromBody] LoginModel loginInfo)
+        {
+            if (Membership.ValidateUser(loginInfo.Username, loginInfo.Password))
+            {
+                FormsAuthentication.SetAuthCookie(loginInfo.Username, true);
+                return int.Parse(Membership.GetUser().Comment);
+            }
+            return 0;
+        }
 
         // GET api/User
         public IEnumerable<Person> GetPeople()
@@ -32,71 +44,6 @@ namespace kriteek.Controllers
             }
 
             return person;
-        }
-
-        // PUT api/User/5
-        public HttpResponseMessage PutPerson(int id, Person person)
-        {
-            if (ModelState.IsValid && id == person.ID)
-            {
-                db.Entry(person).State = EntityState.Modified;
-
-                try
-                {
-                    db.SaveChanges();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    return Request.CreateResponse(HttpStatusCode.NotFound);
-                }
-
-                return Request.CreateResponse(HttpStatusCode.OK);
-            }
-            else
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest);
-            }
-        }
-
-        // POST api/User
-        public HttpResponseMessage PostPerson(Person person)
-        {
-            if (ModelState.IsValid)
-            {
-                db.People.Add(person);
-                db.SaveChanges();
-
-                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.Created, person);
-                response.Headers.Location = new Uri(Url.Link("DefaultApi", new { id = person.ID }));
-                return response;
-            }
-            else
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest);
-            }
-        }
-
-        // DELETE api/User/5
-        public HttpResponseMessage DeletePerson(int id)
-        {
-            Person person = db.People.Find(id);
-            if (person == null)
-            {
-                return Request.CreateResponse(HttpStatusCode.NotFound);
-            }
-
-            db.People.Remove(person);
-
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                return Request.CreateResponse(HttpStatusCode.NotFound);
-            }
-
-            return Request.CreateResponse(HttpStatusCode.OK, person);
         }
 
         protected override void Dispose(bool disposing)

@@ -21,7 +21,7 @@ namespace kriteek.Controllers
         // GET api/Post
         public IEnumerable<Post> GetAll()
         {
-            return db.Posts.AsEnumerable();
+            return db.Posts.Include(x => x.Poster).Include(x => x.Ratings).Include(x => x.Topics).AsEnumerable();
         }
 
         // GET api/Post/5
@@ -38,32 +38,28 @@ namespace kriteek.Controllers
 
         public IEnumerable<Post> GetAllVisibleToUser(int user)
         {
-            return db.Friendtypes.Where(x => x.Members.Select(member => member.ID).Contains(user)).SelectMany(x => x.CanSee);
-        }
-
-        public IEnumerable<Post> GetAllVisibleToGroup(Friendtype group)
-        {
-            return group.CanSee;
+            return (user != 0
+                ? db.Posts.Where(x => x.VisibleTo.Any(y => y.PosterID == user) || x.PosterID == user || x.Type == 0)
+                : db.Posts.Where(x => x.Type == 0)).Include(x => x.Poster).Include(x => x.Ratings).Include(x => x.Topics);
         }
 
         // POST api/Post
-        public HttpResponseMessage PostCreate(JObject newPost)
+        public int PostCreate(JObject newPost)
         {
             dynamic json = newPost;
             Post post = json.post.ToObject<Post>();
             int PosterID = json.PosterID;
             IEnumerable<string> groups = json.groups.ToObject<IEnumerable<string>>();
 
-            post.Poster = db.People.Single(x => x.Username == "abees");
+            post.Poster = db.People.Single(x => x.Username == User.Identity.Name);
+            post.Time = DateTime.Now;
             post.VisibleTo = db.Friendtypes.Where(x => x.PosterID == PosterID && groups.Contains(x.Type)).ToList() as ICollection<Friendtype>;
             db.Posts.Add(post);
             db.SaveChanges();
             post.Poster = null;
             post.VisibleTo = null;
             post.Topics = null;
-            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.Created, post);
-            response.Headers.Location = new Uri(Url.Link("DefaultApi", new { id = post.ID }));
-            return response;
+            return post.ID;
         }
 
         // PUT api/post/id/
@@ -78,6 +74,7 @@ namespace kriteek.Controllers
                 return Request.CreateResponse(HttpStatusCode.NotFound);
 
             Friendtype _ft;
+            if (post.Type == 0) post.Type = 1;
             foreach (Friendtype ft in friendtypes)
             {
                 _ft = db.Friendtypes.Find(ft.PosterID, ft.Type);
@@ -89,31 +86,7 @@ namespace kriteek.Controllers
             
             return Request.CreateResponse(HttpStatusCode.OK);
         }
-
-        //// PUT api/Post/5
-        //public HttpResponseMessage PutPost(int id, Post post)
-        //{
-        //    if (ModelState.IsValid && id == post.ID)
-        //    {
-        //        db.Entry(post).State = EntityState.Modified;
-
-        //        try
-        //        {
-        //            db.SaveChanges();
-        //        }
-        //        catch (DbUpdateConcurrencyException)
-        //        {
-        //            return Request.CreateResponse(HttpStatusCode.NotFound);
-        //        }
-
-        //        return Request.CreateResponse(HttpStatusCode.OK);
-        //    }
-        //    else
-        //    {
-        //        return Request.CreateResponse(HttpStatusCode.BadRequest);
-        //    }
-        //}
-
+        
         // POST api/post/id
         public HttpResponseMessage PostRate(int id, Rating rating)
         {

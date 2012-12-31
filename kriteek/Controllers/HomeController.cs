@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
 
 namespace kriteek.Controllers
 {
@@ -11,6 +12,12 @@ namespace kriteek.Controllers
         public ActionResult Index()
         {
             return View();
+        }
+
+        public ActionResult Logoff()
+        {
+            FormsAuthentication.SignOut();
+            return RedirectToAction("Index");
         }
     }
 }

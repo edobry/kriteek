@@ -31,7 +31,13 @@ namespace kriteek.Controllers
         // POST api/friend/id
         public HttpResponseMessage PostAddToGroup(int id, Friendtype group)
         {
-            db.Friendtypes.Attach(group).Members.Add(db.People.Find(id));
+            Friendtype ft = db.Friendtypes.Include(x => x.Members).SingleOrDefault(x => x.PosterID == group.PosterID && x.Type == group.Type);
+            if (ft == null)
+            {
+                ft = db.Friendtypes.Add(group);
+                db.SaveChanges();
+            }
+            ft.Members.Add(db.People.Find(id));
             db.SaveChanges();
 
             return Request.CreateResponse(HttpStatusCode.OK);

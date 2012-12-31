@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
@@ -11,6 +12,8 @@
     @RenderBody()
 
     @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/knockout")
+    <script src="~/Scripts/sammy-latest.min.js"></script>
     @RenderSection("scripts", required: false)
 </body>
 </html>

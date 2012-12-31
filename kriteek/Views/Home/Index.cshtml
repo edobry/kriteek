@@ -1,0 +1,246 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<div id="toolbar" class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container-fluid">
+            <a class="brand" href="#">kriteek</a>
+            <div class="nav-collapse collapse">
+                <p class="navbar-text pull-right" data-bind="visible: loggedIn">
+                    Logged in as <a href="#" class="navbar-link" data-bind="text: username">Username</a>    <a href="#" data-bind="click: logoff">Log off</a>
+                </p>
+                <form class="navbar-text pull-right" action="api/user" method="post" data-bind="visible: !loggedIn(), submit: login">
+                        <input type="text" placeholder="Username" name="username" />
+                        <input type="password" placeholder="Password" name="password" />
+                        <input type="submit" value="Login" />
+                </form>
+                <ul class="nav">
+                    <li data-bind="visible: location() != 'Posts', click: goToPosts"><a href="#">See all visible posts</a></li>
+                    <li data-bind="visible: loggedIn, click: goToNewPost"><a href="#">Make a new post</a></li>
+                </ul>
+            </div>
+            <!--/.nav-collapse -->
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div id="friends" data-bind="visible: loggedIn">
+        <h4>Add friend </h4>
+        <input type="text" placeholder="ID" data-bind="value: NewFriend.id" /><br />
+        <input type="text" placeholder="Friendtype" data-bind="value: NewFriend.friendtype" /><br />
+        <input type="button" value="Add" data-bind="click: AddFriend" />
+    </div>
+    <div class="hero-unit">
+        <h2 data-bind="text: Title">Posts</h2>
+        <div id="posts" data-bind="foreach: posts, visible: location() != 'NewPost'">
+            <div class="post">
+                <span class="postInfo">
+                    <span data-bind="visible: AverageRating() != -3">Average rating: <!-- ko text: AverageRating --><!-- /ko --></span>
+                </span>
+                <h4>ID: <!-- ko text: ID --><!-- /ko --> Posted by: <!-- ko text: Poster.FullName --><!-- /ko --></h4>
+                <span data-bind="text: Text, attr: { title: Time }"></span>
+                <div class="postTopics" data-bind="foreach: Topics">
+                    <span class="topic" data-bind="text: $data, click: $root.goToTopic "></span>
+                </div>
+                <span data-bind="click: ToggleEditMode">Edit</span>
+                <div data-bind="visible: EditMode">
+                    <input type="text" placeholder="Make Visible to (comma seperated)" data-bind="value: newVisibility" />
+                    <input type="button" value="Save" data-bind="click: savePost" />
+                </div>
+            </div>
+        </div>
+        <div id="newPost" data-bind="visible: location() == 'NewPost'">
+            <input type="text" placeholder="Content" data-bind="value: NewPost.content" /><br />
+            Type: <select data-bind="value: NewPost.type">
+                    <option value="0">Public</option>
+                    <option value="1">Friends</option>
+                  </select>
+            Visible to: <input type="text" placeholder="Friendtype (comma seperated)" data-bind="value: NewPost.friendtype" /><br />
+            <input type="text" placeholder="Topics (comma seperated)" data-bind="value: NewPost.topics" /><br />
+            <input type="button" value="Create" data-bind="click: createPost" />
+        </div>
+    </div>
+</div>
+
+@section scripts{
+<script type="text/javascript">
+    var user = @(User.Identity.IsAuthenticated ? int.Parse(Membership.GetUser().Comment) : 0);
+    var username = "@(User.Identity.IsAuthenticated ? User.Identity.Name : "")";
+
+    $(function () {
+        function Rating(rating) {
+            this.PostID = rating.PostID;
+
+            this.Rater = rating.Rater ? new Person(rating.Rater) : $.ajax({
+                                                                        type: 'GET',
+                                                                        url: "api/user/" + rating.RaterID,
+                                                                        success: function () { },
+                                                                        data: {},
+                                                                        async: false
+                                                                    });
+            this.Value = ko.observable(rating.Value);
+        }
+
+        function Person(person) {
+            var self = this;
+            this.ID = person.ID;
+
+            this.First = ko.observable(person.First);
+            this.Last = ko.observable(person.Last);
+
+            this.FullName = ko.computed(function () {
+                return self.First() + " " + self.Last();
+            });
+        }
+
+        function Post(post) {
+            var self = this;
+            this.ID = post.ID;
+            this.Time = post.Time;
+            this.Type = post.Type;
+
+            this.Poster = new Person(post.Poster);
+            this.Text = ko.observable(post.Text);
+
+            this.Ratings = ko.observableArray($.map(post.Ratings, function (e) { return new Rating(e); }));
+            this.AverageRating = ko.computed(function () {
+                if(self.Ratings().length !=0){
+                    var sum = 0;
+                    for(var i = 0; i < self.Ratings().length; i++){
+                        sum += self.Ratings()[i].Value();
+                    }
+                    return sum/self.Ratings().length;
+                }
+                return -3;
+            });
+
+            this.EditMode = ko.observable(false);
+            this.ToggleEditMode = function(){
+                self.EditMode(!self.EditMode());
+            };
+            this.newVisibility = ko.observable("");
+            this.savePost = function() {
+                $.ajax({
+                    url: 'api/post/' + self.ID,
+                    type: 'PUT',
+                    data: {friendtypes: $.map(self.newVisibility().split(","),function(e){
+                        return {PosterID: user, Type: e};
+                    }), show:true},
+                    success: function(result) {
+                        self.ToggleEditMode();
+                    }
+                });
+            }
+            
+            this.Topics = ko.observableArray($.map(post.Topics, function (e) { return e.Name; }));
+        }
+
+        function ViewModel() {
+            var self = this;
+
+            this.loggedIn = ko.observable(user != 0);
+            this.userID = ko.observable(user);
+            this.username = ko.observable(username);
+            this.location = ko.observable("");
+            this.Title = ko.observable("");
+
+            this.posts = ko.observableArray([]);
+            
+            function loadPosts(posts) {
+                var mappedPosts = $.map(posts, function (post) { return new Post(post); });
+                self.posts(mappedPosts);
+            };
+
+            this.NewPost = {
+                title: ko.observable(""),
+                content: ko.observable(""),
+                type: ko.observable(0),
+                friendtype: ko.observable(""),
+                topics: ko.observable("")
+            };
+
+            this.NewFriend = {
+                id: ko.observable(),
+                friendtype: ko.observable("Friends")
+            };
+            this.AddFriend = function () {
+                $.ajax({
+                    url: 'api/friend/' + self.NewFriend.id(),
+                    type: 'POST',
+                    data: {PosterID: self.userID(), Type: self.NewFriend.friendtype()},
+                    success: function(result) {
+                        alert("Friend " + self.NewFriend.id().toString() + " added to group " + self.NewFriend.friendtype());
+                        self.NewFriend.id(0);
+                        self.NewFriend.friendtype("");
+                    },
+                    error: function(error){
+                        alert(error.message);
+                    }
+                });
+            };
+
+            this.createPost = function () {
+                $.post("api/post",{post:{Type: self.NewPost.type(), Text: self.NewPost.content()},PosterID: self.userID(),groups:self.NewPost.friendtype().split(",")},function(response, status, xhr){
+                    AddTopics(response, self.NewPost.topics());
+                    self.goToPosts();
+                });
+            }
+
+            function AddTopics (postID, topicstring){
+                var topics = topicstring.split(",");
+                for(i in topics){
+                    $.get("api/topic/" + topics[i] + "?post=" +postID);
+                }
+            }
+
+            this.login = function(form) {
+                $.post("api/user", {username: $("[name=username]").val(), password: $("[name=password]").val()}, function(userID){
+                    self.username($("[name=username]").val());
+                    self.userID(userID);
+                    self.loggedIn(userID != 0);
+                    self.goToPosts();
+                });
+                return false;
+            };
+
+            this.logoff = function(form) {
+                $.get("home/logoff");
+                self.loggedIn(false);
+                self.username("");
+                self.userID(0);
+                self.goToPosts();
+                return false;
+            };
+
+            self.goToTopic = function(topic) { location.hash = "topic/" + topic; };
+            self.goToPosts = function() { location.hash = "posts/user/" + self.userID(); };
+            self.goToNewPost = function() { location.hash = "posts/new"; };
+
+            Sammy(function() {
+                this.get('#posts/user/:user', function() {
+                    $.getJSON("api/post/?user=" + this.params.user, loadPosts);
+                    self.location("Posts");
+                    self.Title("Posts visible to user");
+                });
+
+                this.get('#posts/new', function() {
+                    self.location("NewPost");
+                    self.Title("New Post")
+                });
+
+                this.get('#topic/:topic', function() {
+                    $.getJSON("api/topic/" + this.params.topic, loadPosts);
+                    self.location("Topic");
+                    self.Title("Visible posts in topic");
+                });
+        
+                this.get('', function() { this.app.runRoute('get', '#posts/user/' + user) });
+            }).run();
+        };
+        var viewModel = new ViewModel();
+        ko.applyBindings(viewModel);
+    });
+</script>
+}
